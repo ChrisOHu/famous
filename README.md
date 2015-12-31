@@ -60,6 +60,14 @@ Cloning this repository directly is primarily for those wishing to contribute to
     
 Note: cloning only provides the Famo.us folder with all Famo.us code, but it does no application scaffolding. You will additionally need to create your own index.html, and include the `famous.css` file that is included in `famous/core`. Require.js is currently a hard dependency to work off of the Famo.us head.
   
+## Build
+
+- Standalone builds
+```
+    cd to famous-dist-generator and run cmd.js:
+    ./bin/cmd.js path/to/famous/src path/to/famous-global.js
+```
+
 ## Documentation
 
 - Guides and Examples can be found in the repo.
