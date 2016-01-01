@@ -8350,28 +8350,52 @@ Utility.createDocumentFragmentFromHTML = function createDocumentFragmentFromHTML
         result.appendChild(element.firstChild);
     return result;
 };
-Utility.clone = function clone(b) {
-    var a;
-    if (typeof b === 'object') {
-        a = b instanceof Array ? [] : {};
+Utility.trampoline = function () {
+    var func = arguments[0];
+    var args = [];
+    for (var i = 1; i < arguments.length; i++) {
+        args[i - 1] = arguments[i];
+    }
+    var currentBatch = func.apply(this, args);
+    var nextBatch = [];
+    while (currentBatch && currentBatch.length > 0) {
+        currentBatch.forEach(function (eachFunc) {
+            var ret = eachFunc();
+            if (ret && ret.length > 0) {
+                nextBatch = nextBatch.concat(ret);
+            }
+        });
+        currentBatch = nextBatch;
+        nextBatch = [];
+    }
+};
+Utility.clone = function clone(target) {
+    if (typeof target !== 'object') {
+        return target;
+    }
+    if (target == null || Object.keys(target).length == 0) {
+        return target;
+    }
+    function _clone(b, a) {
+        var nextBatch = [];
         for (var key in b) {
             if (typeof b[key] === 'object' && b[key] !== null) {
                 if (b[key] instanceof Array) {
-                    a[key] = new Array(b[key].length);
-                    for (var i = 0; i < b[key].length; i++) {
-                        a[key][i] = Utility.clone(b[key][i]);
-                    }
+                    a[key] = [];
                 } else {
-                    a[key] = Utility.clone(b[key]);
+                    a[key] = {};
                 }
+                nextBatch.push(_clone.bind(null, b[key], a[key]));
             } else {
                 a[key] = b[key];
             }
         }
-    } else {
-        a = b;
+        return nextBatch;
     }
-    return a;
+    ;
+    var ret = target instanceof Array ? [] : {};
+    Utility.trampoline.bind(null, _clone)(target, ret);
+    return ret;
 };
 module.exports = Utility;
 },{}],96:[function(_dereq_,module,exports){
