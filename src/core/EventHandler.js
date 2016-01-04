@@ -61,6 +61,7 @@ define(function(require, exports, module) {
         object.pipe = handler.pipe.bind(handler);
         object.unpipe = handler.unpipe.bind(handler);
         object.on = handler.on.bind(handler);
+        object.oneShot = handler.oneShot.bind(handler);
         object.addListener = object.on;
         object.removeListener = handler.removeListener.bind(handler);
     };
@@ -156,6 +157,20 @@ define(function(require, exports, module) {
             }
         }
         return this;
+    };
+
+    /**
+     * Bind a one shot callback function to an event type handled by this object.
+     *
+     * @method "on"
+     *
+     * @param {string} type event type key (for example, 'click')
+     * @param {function(string, Object)} handler callback
+     * @return {EventHandler} this
+     */
+    EventHandler.prototype.oneShot = function (type, hanlder) {
+        handler.oneShot = true;
+        this.on(type, handler);
     };
 
     /**

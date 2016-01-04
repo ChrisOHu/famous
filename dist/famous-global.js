@@ -537,6 +537,8 @@ EventEmitter.prototype.emit = function emit(type, event) {
     if (handlers) {
         for (var i = 0; i < handlers.length; i++) {
             handlers[i].call(this._owner, event);
+            if (handlers[i].onShot)
+                this.removeListener(type, handlers[i]);
         }
     }
     return this;
@@ -587,6 +589,7 @@ EventHandler.setOutputHandler = function setOutputHandler(object, handler) {
     object.pipe = handler.pipe.bind(handler);
     object.unpipe = handler.unpipe.bind(handler);
     object.on = handler.on.bind(handler);
+    object.oneShot = handler.oneShot.bind(handler);
     object.addListener = object.on;
     object.removeListener = handler.removeListener.bind(handler);
 };
@@ -641,6 +644,10 @@ EventHandler.prototype.on = function on(type, handler) {
         }
     }
     return this;
+};
+EventHandler.prototype.oneShot = function (type, hanlder) {
+    handler.oneShot = true;
+    this.on(type, handler);
 };
 EventHandler.prototype.addListener = EventHandler.prototype.on;
 EventHandler.prototype.subscribe = function subscribe(source) {

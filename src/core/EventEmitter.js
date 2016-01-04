@@ -34,6 +34,7 @@ define(function(require, exports, module) {
         if (handlers) {
             for (var i = 0; i < handlers.length; i++) {
                 handlers[i].call(this._owner, event);
+                if (handlers[i].onShot) this.removeListener(type, handlers[i]);
             }
         }
         return this;
