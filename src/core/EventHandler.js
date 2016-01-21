@@ -162,7 +162,7 @@ define(function(require, exports, module) {
     /**
      * Bind a one shot callback function to an event type handled by this object.
      *
-     * @method "on"
+     * @method "oneShot"
      *
      * @param {string} type event type key (for example, 'click')
      * @param {function(string, Object)} handler callback
