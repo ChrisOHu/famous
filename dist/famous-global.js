@@ -2782,7 +2782,7 @@ module.exports = {
   widgets: _dereq_('./widgets')
 };
 
-},{"./core":18,"./events":22,"./inputs":36,"./math":42,"./modifiers":47,"./physics":71,"./surfaces":82,"./transitions":92,"./utilities":96,"./views":112,"./widgets":117}],24:[function(_dereq_,module,exports){
+},{"./core":18,"./events":22,"./inputs":36,"./math":42,"./modifiers":47,"./physics":71,"./surfaces":82,"./transitions":92,"./utilities":96,"./views":113,"./widgets":118}],24:[function(_dereq_,module,exports){
 var EventHandler = _dereq_('../core/EventHandler');
 var Transitionable = _dereq_('../transitions/Transitionable');
 function Accumulator(value, eventName) {
@@ -8528,7 +8528,7 @@ Deck.prototype.toggle = function toggle(callback) {
         this.open(callback);
 };
 module.exports = Deck;
-},{"../core/OptionsManager":10,"../core/Transform":15,"../transitions/Transitionable":88,"../utilities/Utility":95,"./SequentialLayout":110}],99:[function(_dereq_,module,exports){
+},{"../core/OptionsManager":10,"../core/Transform":15,"../transitions/Transitionable":88,"../utilities/Utility":95,"./SequentialLayout":111}],99:[function(_dereq_,module,exports){
 var RenderNode = _dereq_('../core/RenderNode');
 var Transform = _dereq_('../core/Transform');
 var OptionsManager = _dereq_('../core/OptionsManager');
@@ -8756,7 +8756,7 @@ EdgeSwapper.prototype.commit = function commit(context) {
     };
 };
 module.exports = EdgeSwapper;
-},{"../core/Entity":5,"../core/EventHandler":7,"../core/Transform":15,"../transitions/CachedMap":83,"./RenderController":106}],101:[function(_dereq_,module,exports){
+},{"../core/Entity":5,"../core/EventHandler":7,"../core/Transform":15,"../transitions/CachedMap":83,"./RenderController":107}],101:[function(_dereq_,module,exports){
 var Entity = _dereq_('../core/Entity');
 var Transform = _dereq_('../core/Transform');
 var OptionsManager = _dereq_('../core/OptionsManager');
@@ -9380,6 +9380,66 @@ Lightbox.prototype.render = function render() {
 };
 module.exports = Lightbox;
 },{"../core/Modifier":9,"../core/OptionsManager":10,"../core/RenderNode":11,"../core/Transform":15,"../transitions/Transitionable":88,"../transitions/TransitionableTransform":89,"../utilities/Utility":95}],106:[function(_dereq_,module,exports){
+var Surface = _dereq_('../core/Surface');
+var Scrollview = _dereq_('../views/Scrollview');
+var Modifier = _dereq_('../core/Modifier');
+var View = _dereq_('../core/View');
+var Transform = _dereq_('../core/Transform');
+var Draggable = _dereq_('../modifiers/Draggable');
+function PanelView(options) {
+    View.apply(this, arguments);
+    this.dragXRange = _getDragXRange();
+    this.zIndex = this.options.zIndex || 0;
+    this.content = this.options.content;
+    this.panel = this.options.panel;
+    this.draggable = new Draggable({
+        xRange: this.dragXRange,
+        yRange: [
+            0,
+            0
+        ]
+    });
+    this.content.pipe(this._eventOutput);
+    this.draggable.subscribe(this.content);
+    this.draggable.on('update', _updateDrag.bind(this));
+    this.draggable.on('end', _endDrag.bind(this));
+    this.add(this.draggable).add(this.content);
+    if (this.panel) {
+        this.add(new Modifier({
+            align: [
+                1,
+                0
+            ],
+            origin: [
+                1,
+                0
+            ],
+            transform: Transform.behind()
+        })).add(this.panel);
+    }
+}
+PanelView.prototype = Object.create(View.prototype);
+PanelView.prototype.constructor = PanelView;
+PanelView.prototype.close = function () {
+    this.draggable.setPosition([
+        0,
+        0
+    ], { duration: 300 }, this.options.onClosed);
+};
+function _updateDrag(e) {
+    console.log('Drag update: ' + e.position);
+}
+function _endDrag(e) {
+    console.log('Drag end: ' + e.position);
+}
+function _getDragXRange() {
+    return [
+        -100,
+        0
+    ];
+}
+module.exports = PanelView;
+},{"../core/Modifier":9,"../core/Surface":14,"../core/Transform":15,"../core/View":16,"../modifiers/Draggable":43,"../views/Scrollview":110}],107:[function(_dereq_,module,exports){
 var Modifier = _dereq_('../core/Modifier');
 var RenderNode = _dereq_('../core/RenderNode');
 var Transform = _dereq_('../core/Transform');
@@ -9597,7 +9657,7 @@ RenderController.prototype.render = function render() {
     return result;
 };
 module.exports = RenderController;
-},{"../core/Modifier":9,"../core/RenderNode":11,"../core/Transform":15,"../core/View":16,"../transitions/Transitionable":88}],107:[function(_dereq_,module,exports){
+},{"../core/Modifier":9,"../core/RenderNode":11,"../core/Transform":15,"../core/View":16,"../transitions/Transitionable":88}],108:[function(_dereq_,module,exports){
 var ContainerSurface = _dereq_('../surfaces/ContainerSurface');
 var EventHandler = _dereq_('../core/EventHandler');
 var Scrollview = _dereq_('./Scrollview');
@@ -9636,7 +9696,7 @@ ScrollContainer.prototype.render = function render() {
     return this.container.render();
 };
 module.exports = ScrollContainer;
-},{"../core/EventHandler":7,"../core/OptionsManager":10,"../surfaces/ContainerSurface":75,"../utilities/Utility":95,"./Scrollview":109}],108:[function(_dereq_,module,exports){
+},{"../core/EventHandler":7,"../core/OptionsManager":10,"../surfaces/ContainerSurface":75,"../utilities/Utility":95,"./Scrollview":110}],109:[function(_dereq_,module,exports){
 var Entity = _dereq_('../core/Entity');
 var Group = _dereq_('../core/Group');
 var OptionsManager = _dereq_('../core/OptionsManager');
@@ -9847,7 +9907,7 @@ function _innerRender() {
     return result;
 }
 module.exports = Scroller;
-},{"../core/Entity":5,"../core/EventHandler":7,"../core/Group":8,"../core/OptionsManager":10,"../core/Transform":15,"../core/ViewSequence":17,"../utilities/Utility":95}],109:[function(_dereq_,module,exports){
+},{"../core/Entity":5,"../core/EventHandler":7,"../core/Group":8,"../core/OptionsManager":10,"../core/Transform":15,"../core/ViewSequence":17,"../utilities/Utility":95}],110:[function(_dereq_,module,exports){
 var PhysicsEngine = _dereq_('../physics/PhysicsEngine');
 var Particle = _dereq_('../physics/bodies/Particle');
 var Drag = _dereq_('../physics/forces/Drag');
@@ -10309,7 +10369,7 @@ Scrollview.prototype.render = function render() {
     return this._scroller.render();
 };
 module.exports = Scrollview;
-},{"../core/EventHandler":7,"../core/OptionsManager":10,"../core/ViewSequence":17,"../inputs/GenericSync":27,"../inputs/ScrollSync":32,"../inputs/TouchSync":33,"../physics/PhysicsEngine":48,"../physics/bodies/Particle":51,"../physics/forces/Drag":63,"../physics/forces/Spring":68,"../utilities/Utility":95,"../views/Scroller":108}],110:[function(_dereq_,module,exports){
+},{"../core/EventHandler":7,"../core/OptionsManager":10,"../core/ViewSequence":17,"../inputs/GenericSync":27,"../inputs/ScrollSync":32,"../inputs/TouchSync":33,"../physics/PhysicsEngine":48,"../physics/bodies/Particle":51,"../physics/forces/Drag":63,"../physics/forces/Spring":68,"../utilities/Utility":95,"../views/Scroller":109}],111:[function(_dereq_,module,exports){
 var OptionsManager = _dereq_('../core/OptionsManager');
 var Entity = _dereq_('../core/Entity');
 var Transform = _dereq_('../core/Transform');
@@ -10407,7 +10467,7 @@ SequentialLayout.prototype.commit = function commit(parentSpec) {
     };
 };
 module.exports = SequentialLayout;
-},{"../core/Entity":5,"../core/OptionsManager":10,"../core/Transform":15,"../core/ViewSequence":17,"../utilities/Utility":95}],111:[function(_dereq_,module,exports){
+},{"../core/Entity":5,"../core/OptionsManager":10,"../core/Transform":15,"../core/ViewSequence":17,"../utilities/Utility":95}],112:[function(_dereq_,module,exports){
 var View = _dereq_('../core/View');
 var Entity = _dereq_('../core/Entity');
 var Transform = _dereq_('../core/Transform');
@@ -10450,7 +10510,7 @@ SizeAwareView.prototype.render = function render() {
     return this._id;
 };
 module.exports = SizeAwareView;
-},{"../core/Entity":5,"../core/Transform":15,"../core/View":16}],112:[function(_dereq_,module,exports){
+},{"../core/Entity":5,"../core/Transform":15,"../core/View":16}],113:[function(_dereq_,module,exports){
 module.exports = {
   ContextualView: _dereq_('./ContextualView'),
   Deck: _dereq_('./Deck'),
@@ -10461,6 +10521,7 @@ module.exports = {
   GridLayout: _dereq_('./GridLayout'),
   HeaderFooterLayout: _dereq_('./HeaderFooterLayout'),
   Lightbox: _dereq_('./Lightbox'),
+  PanelView: _dereq_('./PanelView'),
   RenderController: _dereq_('./RenderController'),
   ScrollContainer: _dereq_('./ScrollContainer'),
   Scroller: _dereq_('./Scroller'),
@@ -10469,7 +10530,7 @@ module.exports = {
   SizeAwareView: _dereq_('./SizeAwareView')
 };
 
-},{"./ContextualView":97,"./Deck":98,"./DrawerLayout":99,"./EdgeSwapper":100,"./FlexibleLayout":101,"./Flipper":102,"./GridLayout":103,"./HeaderFooterLayout":104,"./Lightbox":105,"./RenderController":106,"./ScrollContainer":107,"./Scroller":108,"./Scrollview":109,"./SequentialLayout":110,"./SizeAwareView":111}],113:[function(_dereq_,module,exports){
+},{"./ContextualView":97,"./Deck":98,"./DrawerLayout":99,"./EdgeSwapper":100,"./FlexibleLayout":101,"./Flipper":102,"./GridLayout":103,"./HeaderFooterLayout":104,"./Lightbox":105,"./PanelView":106,"./RenderController":107,"./ScrollContainer":108,"./Scroller":109,"./Scrollview":110,"./SequentialLayout":111,"./SizeAwareView":112}],114:[function(_dereq_,module,exports){
 var Scene = _dereq_('../core/Scene');
 var Surface = _dereq_('../core/Surface');
 var Transform = _dereq_('../core/Transform');
@@ -10593,7 +10654,7 @@ NavigationBar.prototype.setContent = function setContent(content) {
     return this.title.setContent(content);
 };
 module.exports = NavigationBar;
-},{"../core/Scene":12,"../core/Surface":14,"../core/Transform":15,"../core/View":16}],114:[function(_dereq_,module,exports){
+},{"../core/Scene":12,"../core/Surface":14,"../core/Transform":15,"../core/View":16}],115:[function(_dereq_,module,exports){
 var Surface = _dereq_('../core/Surface');
 var CanvasSurface = _dereq_('../surfaces/CanvasSurface');
 var Transform = _dereq_('../core/Transform');
@@ -10716,7 +10777,7 @@ Slider.prototype.render = function render() {
     };
 };
 module.exports = Slider;
-},{"../core/EventHandler":7,"../core/OptionsManager":10,"../core/Surface":14,"../core/Transform":15,"../inputs/GenericSync":27,"../inputs/MouseSync":28,"../inputs/TouchSync":33,"../math/Utilities":40,"../surfaces/CanvasSurface":74}],115:[function(_dereq_,module,exports){
+},{"../core/EventHandler":7,"../core/OptionsManager":10,"../core/Surface":14,"../core/Transform":15,"../inputs/GenericSync":27,"../inputs/MouseSync":28,"../inputs/TouchSync":33,"../math/Utilities":40,"../surfaces/CanvasSurface":74}],116:[function(_dereq_,module,exports){
 var Utility = _dereq_('../utilities/Utility');
 var View = _dereq_('../core/View');
 var GridLayout = _dereq_('../views/GridLayout');
@@ -10803,7 +10864,7 @@ TabBar.prototype.select = function select(id) {
     }
 };
 module.exports = TabBar;
-},{"../core/View":16,"../utilities/Utility":95,"../views/GridLayout":103,"./ToggleButton":116}],116:[function(_dereq_,module,exports){
+},{"../core/View":16,"../utilities/Utility":95,"../views/GridLayout":103,"./ToggleButton":117}],117:[function(_dereq_,module,exports){
 var Surface = _dereq_('../core/Surface');
 var EventHandler = _dereq_('../core/EventHandler');
 var RenderController = _dereq_('../views/RenderController');
@@ -10908,7 +10969,7 @@ ToggleButton.prototype.render = function render() {
     return this.arbiter.render();
 };
 module.exports = ToggleButton;
-},{"../core/EventHandler":7,"../core/Surface":14,"../views/RenderController":106}],117:[function(_dereq_,module,exports){
+},{"../core/EventHandler":7,"../core/Surface":14,"../views/RenderController":107}],118:[function(_dereq_,module,exports){
 module.exports = {
   NavigationBar: _dereq_('./NavigationBar'),
   Slider: _dereq_('./Slider'),
@@ -10916,5 +10977,5 @@ module.exports = {
   ToggleButton: _dereq_('./ToggleButton')
 };
 
-},{"./NavigationBar":113,"./Slider":114,"./TabBar":115,"./ToggleButton":116}]},{},[23])(23)
+},{"./NavigationBar":114,"./Slider":115,"./TabBar":116,"./ToggleButton":117}]},{},[23])(23)
 });
