@@ -32,9 +32,15 @@ define(function(require, exports, module) {
     EventEmitter.prototype.emit = function emit(type, event) {
         var handlers = this.listeners[type];
         if (handlers) {
+            var oneShotListeners = [];
             for (var i = 0; i < handlers.length; i++) {
                 handlers[i].call(this._owner, event);
-                if (handlers[i].onShot) this.removeListener(type, handlers[i]);
+                if (handlers[i].oneShot) {
+                    oneShotListeners.push(handlers[i]);
+                }
+            }
+            for (var j = 0; j < oneShotListeners.length; j++) {
+                this.removeListener(type, oneShotListeners[j]);
             }
         }
         return this;

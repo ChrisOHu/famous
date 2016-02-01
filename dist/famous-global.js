@@ -187,6 +187,10 @@ ElementOutput.prototype.on = function on(type, fn) {
         this._element.addEventListener(type, this.eventForwarder);
     this._eventOutput.on(type, fn);
 };
+ElementOutput.prototype.oneShot = function (type, handler) {
+    handler.oneShot = true;
+    this._eventOutput.on(type, handler);
+};
 ElementOutput.prototype.removeListener = function removeListener(type, fn) {
     this._eventOutput.removeListener(type, fn);
 };
@@ -535,10 +539,15 @@ function EventEmitter() {
 EventEmitter.prototype.emit = function emit(type, event) {
     var handlers = this.listeners[type];
     if (handlers) {
+        var oneShotListeners = [];
         for (var i = 0; i < handlers.length; i++) {
             handlers[i].call(this._owner, event);
-            if (handlers[i].onShot)
-                this.removeListener(type, handlers[i]);
+            if (handlers[i].oneShot) {
+                oneShotListeners.push(handlers[i]);
+            }
+        }
+        for (var j = 0; j < oneShotListeners.length; j++) {
+            this.removeListener(type, oneShotListeners[j]);
         }
     }
     return this;
@@ -645,7 +654,7 @@ EventHandler.prototype.on = function on(type, handler) {
     }
     return this;
 };
-EventHandler.prototype.oneShot = function (type, hanlder) {
+EventHandler.prototype.oneShot = function (type, handler) {
     handler.oneShot = true;
     this.on(type, handler);
 };
@@ -9420,11 +9429,11 @@ function PanelView(options) {
 }
 PanelView.prototype = Object.create(View.prototype);
 PanelView.prototype.constructor = PanelView;
-PanelView.prototype.close = function () {
+PanelView.prototype.close = function (onClosed) {
     this.draggable.setPosition([
         0,
         0
-    ], { duration: 300 }, this.options.onClosed);
+    ], { duration: 300 }, onClosed || this.options.onClosed);
 };
 function _updateDrag(e) {
     console.log('Drag update: ' + e.position);

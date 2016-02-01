@@ -168,7 +168,7 @@ define(function(require, exports, module) {
      * @param {function(string, Object)} handler callback
      * @return {EventHandler} this
      */
-    EventHandler.prototype.oneShot = function (type, hanlder) {
+    EventHandler.prototype.oneShot = function (type, handler) {
         handler.oneShot = true;
         this.on(type, handler);
     };

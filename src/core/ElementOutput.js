@@ -64,6 +64,11 @@ define(function(require, exports, module) {
         this._eventOutput.on(type, fn);
     };
 
+    ElementOutput.prototype.oneShot = function (type, handler) {
+        handler.oneShot = true;
+        this._eventOutput.on(type, handler);
+    };
+
     /**
      * Unbind an event by type and handler.
      *   This undoes the work of "on"
